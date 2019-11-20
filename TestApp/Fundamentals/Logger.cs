@@ -6,7 +6,7 @@ namespace TestApp
 {
     public class Logger
     {
-        public string LastMessage { get; set; }
+        public string LastMessage { get; private set; }
 
         public event EventHandler<DateTime> MessageLogged;
 

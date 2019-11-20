@@ -6,26 +6,22 @@ namespace TestApp.UnitTests
     [TestClass]
     public class RentTests
     {
-
-
         [TestMethod]
         public void Method_Scenario_ExpectedBehavior()
         {
-
             // Arrange
 
             // Act
-        
+
             // Assert
+
         }
 
-        // scenario 1
         [TestMethod]
-        public void CanReturn_UserIsAdmin_ReturnsTrue()
+        public void CanReturn_UserIsAdmin_ReturnTrue()
         {
             // Arrange
-
-            var rent = new Rent();
+            var rent = new Rent(new User());
 
             // Act
             var result = rent.CanReturn(new User { IsAdmin = true });
@@ -33,16 +29,30 @@ namespace TestApp.UnitTests
             // Assert
             Assert.IsTrue(result);
 
-            
         }
 
-        // scenario 2
         [TestMethod]
-        public void CanReturn_UserIsRentee_ReturnsTrue()
+        public void CanReturn_UserIsNotAdmin_ReturnFalse()
         {
             // Arrange
+            var rent = new Rent(new User());
+
+            // Act
+            var result = rent.CanReturn(new User { IsAdmin = false });
+
+            // Assert
+            Assert.IsFalse(result);
+
+        }
+
+
+        [TestMethod]
+        public void CanReturn_UserIsTheSameRentee_ReturnTrue()
+        {
+            // Arrange
+          
             var user = new User();
-            var rent = new Rent { Rentee = user };
+            var rent = new Rent(user);
 
             // Act
             var result = rent.CanReturn(user);
@@ -50,40 +60,24 @@ namespace TestApp.UnitTests
             // Assert
             Assert.IsTrue(result);
 
-            
         }
 
-        // scenario 3
         [TestMethod]
-        public void CanReturn_UserIsNotAdminOrRentee_ReturnsFalse()
+        [Ignore("No bo tak")]
+        // [ExpectedException(typeof(ArgumentNullException))]
+        public void CanReturn_UserIsEmpty_ThrowsArgumentNullException()
         {
             // Arrange
-            var user = new User();
-            var rent = new Rent { Rentee = user };
+            var rent = new Rent(new User());
 
             // Act
-            var result = rent.CanReturn(new User());
+            Action act = () => rent.CanReturn(null);
 
             // Assert
-            Assert.IsFalse(result);
-        }
+            var message = Assert.ThrowsException<ArgumentNullException>(act).Message;
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void CanReturn_UserIsEmpty_ArgumentNullException()
-        {
-            // Arrange
-            var rent = new Rent();
-
-            // Act
-            var result = rent.CanReturn(null);
-
-
-
+            Assert.AreEqual("Value cannot be null. Parameter name: user", message);
 
         }
-
-       
-
     }
 }

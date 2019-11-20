@@ -4,11 +4,32 @@ using System.Text;
 
 namespace TestApp
 {
-    public class MathCalculator
+    public interface IMathCalculator
+    {
+        int Max(int a, int b);
+    }
+
+
+    public class MLCalculator : IMathCalculator
+    {
+        public int Max(int a, int b)
+        {
+
+            // ...
+
+            throw new NotImplementedException();
+
+        }
+    }
+
+    public class MathCalculator : IMathCalculator
     {
         public int Add(int a, int b)
         {
-            return a + b;
+            checked
+            {
+                return a + b;
+            }
         }
 
         public int Max(int a, int b)
@@ -16,7 +37,7 @@ namespace TestApp
             return (a > b) ? a : b;
         }
 
-        public IEnumerable<int> GetPrimeNumbers(int limit)
+        public IEnumerable<int> GetPrimeNumbersBelow(int limit)
         {
             for (int i = 0; i < limit; i++)
             {
@@ -24,7 +45,7 @@ namespace TestApp
             }
         }
 
-        public static bool IsPrime(int n)
+        private static bool IsPrime(int n)
         {
             if (n == 2)
             {

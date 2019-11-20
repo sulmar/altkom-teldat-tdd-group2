@@ -6,56 +6,39 @@ using System.Text;
 
 namespace TestApp.NUnitTests
 {
-
     public class LoggerTests
     {
-        [Test]
-        public void Log_WhenCalled_SetLastMessage()
-        {
-            // Arrange
-            var logger = new Logger();
+        private Logger logger;
 
+        [SetUp]
+        public void Setup()
+        {
+            logger = new Logger();
+        }
+
+        [Test]
+        public void Log_CreateLogger_IsLastMessageIsNull()
+        {
+            // Assert
+            Assert.That(logger.LastMessage, Is.Null);
+        }
+
+        [Test]
+        public void Log_WhenMessageIsNotEmpty_SetLastMessage()
+        {
             // Act
             logger.Log("a");
 
             // Assert
             Assert.That(logger.LastMessage, Is.EqualTo("a"));
 
+            logger.LastMessage.Should().Be("a");
         }
 
         [Test]
-        public void Log_WhenCalled_RaiseMessageLoggedEvent()
+        public void Log_WhenMessageIsEmpty_ThrowArgumentNullException()
         {
-            // Arrange
-            var logger = new Logger();
-
-            var loggedDate = DateTime.MinValue;
-
-            logger.MessageLogged += (sender, args) => { loggedDate = args; };
-
-            // Act
-            logger.Log("a");
-
-            // Assert
-            Assert.That(loggedDate, Is.Not.EqualTo(DateTime.MinValue));
-
-        }
-
-        [Test]
-        public void Log_WhenCalled_RaiseMessageLoggedEvent2()
-        {
-            // Arrange
-            var logger = new Logger();
-
-            using (var monitoredLogger = logger.Monitor())
-            {
-                // Act
-                logger.Log("a");
-
-                // Assert
-                monitoredLogger.Should().Raise(nameof(Logger.MessageLogged));
-
-            }
+            Assert.Throws<ArgumentNullException>(()=>logger.Log(null));
         }
     }
 }
