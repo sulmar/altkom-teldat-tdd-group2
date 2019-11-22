@@ -9,18 +9,40 @@ namespace TestApp.Mocking
 {
     // dotnet add package NGeoHash
 
+
+    public interface IFileReader
+    {
+        string ReadAllText(string path);
+    }
+
+    
+
     public class TrackingService
     {
+        private readonly IFileReader fileReader;
+
+        public TrackingService(IFileReader fileReader = null)
+        {
+            this.fileReader = fileReader;
+        }
+
         public Location Get()
         {
-            string json = File.ReadAllText("tracking.txt");
+            string json = fileReader.ReadAllText("tracking.json");
+            try
+            {
+                Location location = JsonConvert.DeserializeObject<Location>(json);
 
-            Location location = JsonConvert.DeserializeObject<Location>(json);
+                if (location == null)
+                    throw new ApplicationException("Error parsing the location");
 
-            if (location == null)
-                throw new ApplicationException("Error parsing the location");
+                return location;
+            }
+            catch(JsonReaderException e)
+            {
+                throw new ApplicationException("Error parsing the location", e);
+            }
 
-            return location;
         }
 
         // geohash.org

@@ -50,16 +50,12 @@ namespace WpfApp.ViewModels
         {
             var vehicles = await vehicleRepository.GetAsync();
 
-            if (Code!=null)
-            {
-                vehicles = vehicles
-               .Where(v => v.Vin.StartsWith(Code.Substring(1, 2)));
-            }
+            vehicles = await vehicles.GetAsync(Code);
 
             Vehicles = vehicles.ToList();
         }
 
-        public bool CanSearch => true;
+        public bool CanSearch => !string.IsNullOrWhiteSpace(Code);
     }
 
     

@@ -60,7 +60,7 @@ namespace WpfApp.UnitTests
         }
 
         [Test]
-        public void CanSearch_NotEmptyCode_ReturnFalse()
+        public void CanSearch_NotEmptyCode_ReturnTrue()
         {
             // Arrange
             vehiclesViewModel.Code = "AA";

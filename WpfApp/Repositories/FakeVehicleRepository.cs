@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using WpfApp.Models;
 using WpfApp.ViewModels;
@@ -10,6 +11,14 @@ namespace WpfApp.Repositories
     public interface IVehicleRepository
     {
         Task<IEnumerable<Vehicle>> GetAsync();
+        
+
+    }
+
+    public static class IVehicleRepositoryExtensions
+    {
+        public static Task<IEnumerable<Vehicle>> GetAsync(this IEnumerable<Vehicle> vehicles, string code) => Task.FromResult(vehicles
+                .Where(v => v.Vin.StartsWith(code)));
     }
 
     public class FakeVehicleRepository : IVehicleRepository
