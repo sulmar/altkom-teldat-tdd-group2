@@ -30,15 +30,24 @@ namespace WpfApp.ViewModels
 
         public ICommand SearchCommand { get; }
 
+        private IVehicleRepository vehicleRepository;
+
         public VehiclesViewModel()
+            : this(new FakeVehicleRepository())
         {
-            SearchCommand = new RelayCommand(async () => await SearchAsync(), () => CanSearch);
+
         }
 
-        private async Task SearchAsync()
+        public VehiclesViewModel(IVehicleRepository vehicleRepository)
         {
-            IVehicleRepository vehicleRepository = new FakeVehicleRepository();
+            this.vehicleRepository = vehicleRepository;
 
+            SearchCommand = new RelayCommand(async () => await SearchAsync(), () => CanSearch);
+           
+        }
+
+        public async Task SearchAsync()
+        {
             var vehicles = await vehicleRepository.GetAsync();
 
             if (Code!=null)
