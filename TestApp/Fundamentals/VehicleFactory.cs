@@ -4,34 +4,50 @@ using System.Text;
 
 namespace TestApp.Fundamentals
 {
-    public abstract class Vehicle
+    public abstract class Platform
     {
         public string Name { get; set; }
         public string Code { get; set; }
+        public string Country { get; set; }
     }
 
-    public class Friend : Vehicle
+
+
+    public class Friend : Platform
     {
         public string Unit { get; set; }
     }
 
-    public class Foe : Vehicle
+    public class Foe : Platform
     {
-        public string Country { get; set; }
+      
     }
 
-    public static class VehicleFactory
+
+    // | ICAO | Country | IsFriend
+
+    public static class PlatformFactory
     {
         // https://pl.wikipedia.org/wiki/Oznakowania_statk%C3%B3w_powietrznych
-        public static Vehicle Create(string symbolIdentifier)
+        public static Platform Create(string symbolIdentifier)
         {
-            // ICAO Code = SP   -> Friend
+            Platform platform;
 
-            // ICAO Code in ( ...  )  -> Foe
+            bool isFriend = false;
 
-            throw new NotSupportedException();
+            if (isFriend)
+            {
+                platform = new Friend();
+            }
+            else
+            {
+                platform = new Foe();
+            }
 
-            return new Friend();
+            // platform.Country = 
+
+            throw new NotImplementedException();
+
         }
     }
 

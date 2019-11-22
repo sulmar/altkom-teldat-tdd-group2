@@ -13,7 +13,12 @@ namespace TestApp
     {
         public decimal CalculateDiscount(Order order)
         {
-            throw new NotImplementedException();
+            if (true)
+            {
+                return order.Total * 0.3m;
+            }
+
+
         }
     }
 

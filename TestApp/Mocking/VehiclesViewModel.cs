@@ -1,16 +1,52 @@
-﻿using System;
+﻿using Bogus;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using TestApp.Fundamentals;
 
 namespace TestApp.Mocking
 {
-    public class VehiclesViewModel
+    public class Vehicle
     {
-        public ICollection<Vehicle> Vehicles { get; private set; }
+        public int Id { get; set; }
+        public string Manufacturer { get; set; }
+        public string Model { get; set; }
+        public string Vin { get; set; }
+    }
 
-        public VehicleSearchCriteria Criteria { get; set; }
+    public abstract class BaseViewModel : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void OnPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    public class VehiclesViewModel : BaseViewModel
+    {
+        #region Vehicles
+        private ICollection<Vehicle> vehicles;
+        public ICollection<Vehicle> Vehicles
+        {
+            get 
+            {
+                return vehicles;
+            }
+            private set
+            {
+                this.vehicles = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+
+        public string Code { get; set; }
 
         public ICommand SearchCommand { get; set; }
 
@@ -18,40 +54,42 @@ namespace TestApp.Mocking
 
         public VehiclesViewModel()
         {
-            this.Criteria = new VehicleSearchCriteria();
-              
             SearchCommand = new RelayCommand(async () => await SearchAsync(), () => CanSearch);    
         }
 
-        public async Task SearchAsync()
+        private async Task SearchAsync()
         {
-            this.Vehicles = await vehicleRepository.GetAsync(Criteria);
+            var vehicles = await vehicleRepository.GetAsync();
+
+            Vehicles = vehicles.Where(v=>v.Vin.Substring(0,2) == Code).ToList();
         }
         
         public bool CanSearch => true;
-
     }
 
-    public interface IEntityRepository<TEntity>
+    public class VehicleFaker : Faker<Vehicle>
     {
-        ICollection<TEntity> Get();
-        TEntity Get(int id);
-        void Add(TEntity entity);
-        void Update(TEntity entity);
-        void Remove(int id);
+        public VehicleFaker()
+        {
+            RuleFor(p => p.Id, f => f.IndexFaker);
+            RuleFor(p => p.Manufacturer, f => f.Vehicle.Manufacturer());
+            RuleFor(p => p.Model, f => f.Vehicle.Model());
+            RuleFor(p => p.Vin, f => f.Vehicle.Vin());
+        }
     }
 
-    public interface IVehicleRepository : IEntityRepository<Vehicle>
+    public class FakeVehicleRepository : IVehicleRepository
     {
-        Task<ICollection<Vehicle>> GetAsync(VehicleSearchCriteria criteria);
+
+
+        public Task<ICollection<Vehicle>> GetAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 
-    public class VehicleSearchCriteria
-    {
-        public string Name { get; set; }
-        public string Model { get; set; }
-
-        public bool IsValid => !string.IsNullOrEmpty(Name) || !string.IsNullOrEmpty(Model);
+    public interface IVehicleRepository     {
+        Task<ICollection<Vehicle>> GetAsync();
     }
 
     public interface ICommand
