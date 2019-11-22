@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp", "WpfApp\WpfApp.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApp.UnitTests", "WpfApp.UnitTests\WpfApp.UnitTests.csproj", "{FE1B83CE-49F9-4902-92F5-B99C243E9BE1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.IntegrationTests", "Api.IntegrationTests\Api.IntegrationTests.csproj", "{91850F40-3D6A-4958-A178-F3EBD161FC82}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{FE1B83CE-49F9-4902-92F5-B99C243E9BE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE1B83CE-49F9-4902-92F5-B99C243E9BE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE1B83CE-49F9-4902-92F5-B99C243E9BE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91850F40-3D6A-4958-A178-F3EBD161FC82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91850F40-3D6A-4958-A178-F3EBD161FC82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91850F40-3D6A-4958-A178-F3EBD161FC82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91850F40-3D6A-4958-A178-F3EBD161FC82}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

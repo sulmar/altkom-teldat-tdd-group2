@@ -10,6 +10,39 @@ using System.Threading.Tasks;
 
 namespace TestApp.Mocking
 {
+    public interface IOrderService
+    {
+        IEnumerable<Order> Get(DateTime from, DateTime to);
+    }
+
+    public interface IUserService
+    {
+        IEnumerable<Employee> GetBosses();
+        Bot GetBot();
+    }
+
+    public class DbUserService : IUserService
+    {
+        private readonly SalesContext salesContext;
+
+        public DbUserService(SalesContext context)
+        {
+            this.salesContext = context;
+        }
+
+        public IEnumerable<Employee> GetBosses()
+        {
+            var employees
+                = salesContext.Users.OfType<Employee>().Where(e => e.IsBoss).ToList();
+
+            return employees;
+        }
+
+        public Bot GetBot()
+        {
+            return salesContext.Users.OfType<Bot>().Single();
+        }
+    }
 
     public class ReportService
     {
@@ -20,12 +53,21 @@ namespace TestApp.Mocking
 
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
+        private readonly IOrderService orderService;
+        private readonly ISalesReportBuilder salesReportBuilder;
+        private readonly IUserService userService;
 
+        public ReportService(IOrderService orderService,
+            ISalesReportBuilder salesReportBuilder, 
+            IUserService userService)
+        {
+            this.orderService = orderService;
+            this.salesReportBuilder = salesReportBuilder;
+            this.userService = userService;
+        }
 
         public async Task SendSalesReportEmailAsync(DateTime date)
         {
-            OrderService orderService = new OrderService();
-
             var orders = orderService.Get(date.AddDays(-7), date);
 
             if (!orders.Any())
@@ -33,22 +75,23 @@ namespace TestApp.Mocking
                 return;
             }
 
-            SalesReport report = Create(orders);
+            salesReportBuilder.AddOrders(orders);
+            salesReportBuilder.AddOrders(orders);
+
+            SalesReport report = salesReportBuilder.Build();
 
             // dotnet add package SendGrid
             SendGridClient client = new SendGridClient(apikey);
 
-            SalesContext salesContext = new SalesContext();
 
-            var recipients = salesContext.Users.OfType<Employee>().Where(e => e.IsBoss).ToList();
+            var recipients = userService.GetBosses();
 
-            var sender = salesContext.Users.OfType<Bot>().Single();
+            recipients = recipients.Where(r => !string.IsNullOrEmpty(r.Email));
+
+            var sender = userService.GetBot();
 
             foreach (var recipient in recipients)
             {
-                if (recipient.Email == null)
-                    continue;
-
                 var message = MailHelper.CreateSingleEmail(
                     new EmailAddress(sender.Email, $"{sender.FirstName} {sender.LastName}"),
                     new EmailAddress(recipient.Email, $"{recipient.FirstName} {recipient.LastName}"),
@@ -76,6 +119,25 @@ namespace TestApp.Mocking
             }
         }
 
+        
+    }
+
+
+
+    public class SalesReportBuilder : ISalesReportBuilder
+    {
+         private IEnumerable<Order> orders;
+
+        public void AddOrders(IEnumerable<Order> orders)
+        {
+            this.orders = orders;
+        }
+
+        public SalesReport Build()
+        {
+            return Create(orders);
+        }
+
         private static SalesReport Create(IEnumerable<Order> orders)
         {
             SalesReport salesReport = new SalesReport();
@@ -96,7 +158,7 @@ namespace TestApp.Mocking
         }
     }
 
-    public class OrderService
+    public class OrderService : IOrderService
     {
         private readonly SalesContext context;
 

@@ -43,7 +43,13 @@ namespace TestApp.Mocking
 
             // send sms 
             if (invoice.Agreement)
-                messageSender.Send($"Wysłano fakturę nr {invoice.Number}");
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                     messageSender.Send($"Wysłano fakturę nr {invoice.Number}");
+                }
+               
+            }
 
         }
 
